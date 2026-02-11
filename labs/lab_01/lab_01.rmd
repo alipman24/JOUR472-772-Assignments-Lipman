@@ -1,0 +1,100 @@
+---
+title: "lab_01"
+author: "Derek Willis"
+date: "2025-01-16"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# Turn off scientific notation
+options(scipen=999)
+```
+
+## About this lab
+
+To complete this lab, you need to: \* run existing code as directed (look for **Task**). \* modify existing code as directed (look for **Task**). \* write code in empty codeblocks provided to answer questions included (look for **Q**). \* write out the answer in the form of a complete sentence in the space given (look for **A**). When you are finished, commit changes and push to your personal GitHub repo, then submit the URL to this document on ELMS.
+
+Remember to add any new verbs or concepts to your class reference notebook!
+
+## Load libraries and establish settings
+
+**Task** Run the codeblock below to load the Tidyverse. To run the codeblock, hit the little green play button in the upper right corner of the gray area (the codeblock) below.
+
+```{r}
+# Load the tidyverse. If you have not installed the tidyverse already, remove the # from the next line and run it first.  
+install.packages('tidyverse')
+library(tidyverse)
+```
+
+## Load Data
+
+We're going to load the UMD courses data.
+
+**Task** Run the codeblock below to load the data, which is contained in an RDS file.
+
+```{r}
+umd_courses <- read_rds("lab_01.rds")
+```
+
+## Answer questions
+
+**Q1** Which department has the highest mean (average) number of seats for its classes? You need to show the department with the highest average first. Which one is the most surprising/interesting to you?
+
+**A1: The department with the highest average number of seats is Computer, Math, and Natural Sciences. I was surprised by how low the average is for some language departments like Latin and Greek, which have an average below seven seats.**
+
+```{r}
+umd_courses |>
+  group_by(department) |>
+  summarise(
+    count_classes = n(),
+    total_seats = sum(seats),
+    mean_seats = mean(seats)
+  ) |>
+  arrange(desc(mean_seats))
+```
+
+**Q2** Find out the greatest number of times any individual class has been offered in our dataset. Your code must show the greatest number of classes first.
+
+**A2: The most times an individual class has been offered is 29.**
+
+```{r}
+umd_courses |>
+  group_by(id) |>
+  summarise(
+    count_ids = n()
+  ) |>
+arrange(desc(count_ids))
+```
+
+**Q3** Count the number of courses for each instructor and department. Which instructor has taught the most?
+
+**A3: The instructor who has taught the most is Keith Yearwood with 79 classes in the Geographical Studies department.**
+
+```{r}
+umd_courses |>
+  group_by(instructors, department) |>
+  summarise(
+    count_classes = n()
+  ) |>
+  arrange(desc(count_classes))
+```
+
+**Q4** Given the results for Q3, what would have made it easier to find the answer? You don't have to know *how* to accomplish this; I want you to describe in words what would make the answer easier to see. How confident are you that the answer you got is the right one, and why?
+
+**A4: Having a more complete data set for instructors would have made it easier to find the answer. The lack of instructor names created an NA value that has the highest total counts in the dataset after grouping. The process for grouping and counting the data makes sense despite the dataset challenges. The data is first grouped by the instructor and department, which isolates each instructor and prevents any duplicate names from skewing the counts by instructor. Then, the total count is sorted by the highest value first. Instructor names and department are included in each row alongside their count value.**
+
+**Q5** Take one of the questions you listed in the final question of the pre_lab and try to answer it here in code. If you don't know how to fully answer it, write what code you can and describe in words what else you would need to do. If you got an answer, is it interesting?
+
+**A5: My question from the prelab was "How have the mean and median seats changed by year instead of term?" I was able to get the mean and median seats by term but the code we know in R so far is not able to group by year. My next step would be either taking the first four characters in each term entry first, which would isolate the year value, and then grouping by the newly defined term column. I would then be able to follow the same process for finding the mean and median seats.**
+
+```{r}
+umd_courses |>
+  group_by(term) |>
+  summarise(
+    total_seats = sum(seats),
+    mean_seats = mean(seats),
+    median_seats = median(seats)
+  ) |>
+  arrange(desc(mean_seats))
+```
