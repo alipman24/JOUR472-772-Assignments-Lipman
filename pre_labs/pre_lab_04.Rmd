@@ -98,7 +98,7 @@ cleaned_md_grant_loans |>
 
 ### Task 7: Use a different refinr method to clean the Grantee field.
 
-**Task** Run the following code to use the n_gram_merge() function to clean the data, then group by grantee_clean and Grantee to examine recipients that start with W. Look at the differences. Does the changes it made vary substantially from the previous use of key_collision_merge? **Answer**
+**Task** Run the following code to use the n_gram_merge() function to clean the data, then group by grantee_clean and Grantee to examine recipients that start with W. Look at the differences. Does the changes it made vary substantially from the previous use of key_collision_merge? **Answer: Both methods returned roughly similar results except for the ordering of some words in the cleaned name. ngram_clean seems to be taking the version of the name that is further down on an alphabetical list, seeming to indicate that the function sorts the column first like that to identify the likeliest first instance.**
 
 ```{r}
 comparison_md_grant_loans <- md_grant_loans |>
