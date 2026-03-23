@@ -141,36 +141,55 @@ e_by_hour
 #### **Q11** I want to make a note of all the records in this data set that I consider serious. For my purposes, I'm thinking that all tremors that have a magnitude that is larger than 3 are serious. How do I automatically create a new column making that distinction?
 
 ```{r}
-earthquakes |> mutate(serious = case_when(
+with_serious <- e_by_hour |> mutate(serious = case_when(
   mag > 3 ~ 'Yes',
   .default = 'No'
 ))
+with_serious
 ```
 
-**A11:**
+**A11: The case_when() function allows for values to be assigned in a new column based on data from another column.**
 
 ------------------------------------------------------------------------
 
 #### **Q12** I have no idea how earthquakes work and I'm interested in seeing if there is a particular time of day in which serious earthquakes happen. How can I see that condensed in a table with all the hours in a day and all the serious earthquakes in each hour? What is the hour with fewer serious earthquakes and the one with the most serious earthquakes?
 
 ```{r}
-
+serious_by_hour <- with_serious |> filter(str_detect(serious, "Yes")) |> group_by(hour) |> summarise(count_serious = n()) |> arrange(desc(count_serious))
+serious_by_hour
 ```
 
-**A12**:
+**A12**: 5:00 p.m. (17) is the hour with the most serious earthquakes. Noon (12) is the hour with the fewest serious earthquakes.
 
 ------------------------------------------------------------------------
 
 #### EXTRA Q What other questions are you interested in and how would you ask them in R?
 
-```{r}
+My first question is how many serious earthquakes are in the morning vs after noon.
 
+My second question is about the most common direction from a listed place in the data.
+
+My third question is how earthquake type related to the depth error.
+
+```{r}
+serious_by_hour |> mutate(time_of_day = case_when(
+  hour > 12 ~ 'After Noon',
+  .default = 'Before Noon')) |> group_by(time_of_day) |> summarise(count = n()) |> arrange(desc(count))
 ```
 
 ```{r}
-
+with_serious |> mutate(direction = case_when(
+  str_detect(place, " E ") ~ 'East',
+  str_detect(place, " N ") ~ 'North',
+  str_detect(place, " S ") ~ 'South',
+  str_detect(place, " W ") ~ 'West',
+  str_detect(place, "NW") ~ 'Northwest',
+  str_detect(place, "NE") ~ 'Northeast',
+  str_detect(place, "SW") ~ 'Southwest',
+  str_detect(place, "SE") ~ 'Southeast',
+  .default ='unknown')) |> group_by(direction) |> summarise(count = n()) |> arrange(desc(count))
 ```
 
 ```{r}
-
+earthquakes |> group_by(type) |> summarise(avg_depth_error = mean(depthError))
 ```
