@@ -18,7 +18,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Introduction
 
-In this notebook, we are reverse engineering the story, [STORY NAME](STORY%20URL)
+In this notebook, we are reverse engineering the story, "Comic Books Are Still Made By Men, For Men And About Men"
 
 <https://github.com/fivethirtyeight/data/tree/master/comic-characters>
 
@@ -27,7 +27,9 @@ In this notebook, we are reverse engineering the story, [STORY NAME](STORY%20URL
 Loading required libraries for this analysis.
 
 ```{r echo=FALSE, message=FALSE}
-
+library(tidyverse)
+library(janitor)
+library(lubridate)
 ```
 
 ## Load and Cleaning Data
@@ -35,13 +37,8 @@ Loading required libraries for this analysis.
 In this section, describe the source of the data, write a basic data dictionary for data you are working with, and discuss any caveats or issues you discovered working with this data.
 
 ```{r}
-# Load required data
-
-# Path to data should be loaded from folder "data" i.e. read_csv("data/name_of_data.csv")
-
-# Clean required data and prepare for analysis if needed. 
-
-
+dc_data <- read_csv("data/dc-wikia-data") |> clean_names()
+marvel_data <- read_csv("data/marvel-wikia-data") |> clean_names()
 ```
 
 ## Sentences to Engineer
