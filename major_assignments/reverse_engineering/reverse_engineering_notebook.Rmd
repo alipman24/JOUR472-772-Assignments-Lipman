@@ -20,6 +20,8 @@ knitr::opts_chunk$set(echo = TRUE)
 
 In this notebook, we are reverse engineering the story, [STORY NAME](STORY%20URL)
 
+<https://github.com/fivethirtyeight/data/tree/master/comic-characters>
+
 ## Load libraries
 
 Loading required libraries for this analysis.
