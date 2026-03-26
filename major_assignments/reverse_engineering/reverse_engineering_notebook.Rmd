@@ -37,8 +37,8 @@ library(lubridate)
 In this section, describe the source of the data, write a basic data dictionary for data you are working with, and discuss any caveats or issues you discovered working with this data.
 
 ```{r}
-dc_data <- read_csv("data/dc-wikia-data") |> clean_names()
-marvel_data <- read_csv("data/marvel-wikia-data") |> clean_names()
+dc_data <- read_csv("data/dc-wikia-data.csv") |> clean_names()
+marvel_data <- read_csv("data/marvel-wikia-data.csv") |> clean_names()
 ```
 
 ## Sentences to Engineer
@@ -47,14 +47,14 @@ In this notebook, we are reverse engineering five sentences from the story.
 
 ### Sentence 1
 
--   **Sentence text**: [Paste in sentence to engineer here]
--   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+-   **Sentence text**: "Women and men were almost exactly equally likely to have a secret identity in the Marvel universe (49.4 percent of males and 49.5 percent of females), while in the DC universe 51 percent of males had a secret identity and 45 percent of females did.”
+-   **Analysis summary**: Our analysis of DC characters did match the findings of the article at 45%. Our data did have an issue with 577 unclassified female characters, which could be relevant if the data is missing or not important if the characters do not have heroic/villainous identities. Marvel had a slightly different classification system for identities. We had a different result of 49.4% female secret identities when the five "known to authorities" characters were excluded but the results matched again when they were added in.
 
 ```{r}
 # Put code to reverse engineer sentence here
-
+dc_data |> filter(str_detect(sex, "Female")) |> group_by(id, sex) |> summarise(count=n())
 # Display results of code below this codeblock
-
+marvel_data |> filter(str_detect(sex, "Female")) |> group_by(id, sex) |> summarise(count=n())
 ```
 
 ### Sentence 2
