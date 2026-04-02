@@ -59,26 +59,52 @@ marvel_data |> filter(str_detect(sex, "Female")) |> group_by(id, sex) |> summari
 
 ### Sentence 2
 
--   **Sentence text**: [Paste in sentence to engineer here]
--   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+-   **Sentence text**: "The same trend bears out when we look at characters with higher appearance counts. When we zero in on the 2,415 DC and 3,342 Marvel characters with gender data who appear at least 10 times — the set of characters that probably gives the most consistent view of what we see on the page — female characters make up only 30.9 percent of the DC universe and 30.6 percent of the Marvel universe."
+-   **Analysis summary**: The article's conclusion of 30.9% of DC characters with 10 appearances being female is close but inaccurate to our findings, including scenarios where rounding would be used. We found 738 female characters, representing a close but ultimately higher 31.04%. For Marvel, we had a similar result with a roughly close number but a higher one again. We found 30.84% of Marvel characters with 10 appearances were female, beating out the article's smaller 30.6% result. The results being so close suggests that an extra character could have been in the article's calculations, potentially by doing a process of over 10 instead of greater than or equal to 10.
 
 ```{r}
-# Put code to reverse engineer sentence here
+dc_apps_over_ten <- dc_data |>
+filter(appearances >= 10) |>
+filter(sex == "Male Characters" | sex == "Female Characters") |>
+group_by(sex) |>
+summarise(count = n()) |>
+mutate(percent = count / sum(count) * 100)
+
+marvel_apps_over_ten <- marvel_data |>
+filter(appearances >= 10) |>
+filter(sex == "Male Characters" | sex == "Female Characters") |>
+group_by(sex) |>
+summarise(count = n()) |>
+mutate(percent = count / sum(count) * 100)
 
 # Display results of code below this codeblock
-
+dc_apps_over_ten
+marvel_apps_over_ten
 ```
 
 ### Sentence 3
 
--   **Sentence text**: [Paste in sentence to engineer here]
--   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+-   **Sentence text**: "When we focus on only the most frequently appearing characters in each universe — the stars of the show — the data changes. Of characters with gender data and 100 or more appearances (294 DC characters and 414 Marvel characters), only 29.0 percent of DC’s are female, and a similar 31.1 percent of the Marvel crowd is."
+-   **Analysis summary**: We found the same conclusion as the article for DC female characters with at least 100 appearances. Even with rounding considerations, the 29.01% in our findings would go down to 29%. Marvel did not have the same outcome for this calculation. We had a difference of almost 0.2% at 31.29% instead of the article's 31.1%. This difference could be from extra inclusions in the article's dataset with the appearance counter as the likeliest source for the decimal change. There are likely few characters with exactly 100 appearances, matching the little tweaks that could alter a result by such a small amount.
 
 ```{r}
-# Put code to reverse engineer sentence here
+dc_apps_over_100 <- dc_data |>
+filter(appearances >= 100) |>
+filter(sex == "Male Characters" | sex == "Female Characters") |>
+group_by(sex) |>
+summarise(count = n()) |>
+mutate(percent = count / sum(count) * 100)
+
+marvel_apps_over_100 <- marvel_data |>
+filter(appearances >= 100) |>
+filter(sex == "Male Characters" | sex == "Female Characters") |>
+group_by(sex) |>
+summarise(count = n()) |>
+mutate(percent = count / sum(count) * 100)
 
 # Display results of code below this codeblock
-
+dc_apps_over_100
+marvel_apps_over_100
 ```
 
 ### Sentence 4
