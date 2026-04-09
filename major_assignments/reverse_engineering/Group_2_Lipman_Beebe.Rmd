@@ -20,7 +20,9 @@ knitr::opts_chunk$set(echo = TRUE)
 
 In this notebook, we are reverse engineering the story, "Comic Books Are Still Made By Men, For Men And About Men"
 
-<https://github.com/fivethirtyeight/data/tree/master/comic-characters>
+Dataset Link: <https://github.com/fivethirtyeight/data/tree/master/comic-characters>
+
+Memo Link: <https://docs.google.com/document/d/1-sYZ3JRfR1ZPPwaQB4vU936U2GaLbn5vL9yyNO9Lxv0/edit?tab=t.0>
 
 ## Load libraries
 
@@ -109,25 +111,65 @@ marvel_apps_over_100
 
 ### Sentence 4
 
--   **Sentence text**: [Paste in sentence to engineer here]
--   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+-   **Sentence text**: “In both DC and Marvel, women were of neutral allegiance at a higher rate than men.”
+-   **Analysis summary**: We did not get anything close to the finding that women were at a higher rate of neutrality than men in DC or Marvel. Both universes had under 40% of women as neutral and over 60% of men as neutral. Looking at the dataset ourselves, we noticed key problems with how this information is tracked. For example, multiple members of the X-Men, which is one of the most famous hero teams in Marvel, had core members listed as neutral. Those characters were Wolverine and Cyclops. Our first thought is that it could be widespread inputting errors but there may be an issue with the system instead. Both characters have been villains or anti-heroes before, potentially suggesting that neutral characters in the dataset are including any characters that have done both heroic and evil acts.
 
 ```{r}
-# Put code to reverse engineer sentence here
+dc_neutral <- dc_data |>
+filter(align == "Neutral Characters") |>
+filter(sex == "Male Characters" | sex == "Female Characters") |>
+group_by(sex) |>
+summarise(count = n()) |>
+mutate(percent = count / sum(count) * 100)
+
+marvel_neutral <- marvel_data |>
+filter(align == "Neutral Characters") |>
+filter(sex == "Male Characters" | sex == "Female Characters") |>
+group_by(sex) |>
+summarise(count = n()) |>
+mutate(percent = count / sum(count) * 100)
 
 # Display results of code below this codeblock
+dc_neutral
+marvel_neutral
 
 ```
 
 ### Sentence 5
 
--   **Sentence text**: [Paste in sentence to engineer here]
--   **Analysis summary**: [Write up two to three sentences describing the results of your analysis. Were you able to confirm the finding? If not, why not?]
+-   **Sentence text**: “Women and men were almost exactly equally likely to have a secret identity in the Marvel universe (49.4 percent of males and 49.5 percent of females), while in the DC universe 51 percent of males had a secret identity and 45 percent of females did."
+-   **Analysis summary**: We did not find similar results for secret identities as the article. Our numbers consistently came in lower than the article's with 36.6% and 31.7% for men and women in DC respectively, For Marvel, we found 38.7% for male characters and 39.2% for female characters. The percentages are still roughly even with each other like the article found. We believe the difference comes from the part of the dataset that is missing an identity listing, representing over 20% in each gender and publisher filter. If that data had been assigned, the percents could have still been even but closer to the article's results.
 
 ```{r}
-# Put code to reverse engineer sentence here
+dc_male_secret <- dc_data |>
+filter(sex == "Male Characters") |>
+group_by(id) |>
+summarise(count = n()) |>
+mutate(percent = count / sum(count) * 100)
+
+dc_female_secret <- dc_data |>
+filter(sex == "Female Characters") |>
+group_by(id) |>
+summarise(count = n()) |>
+mutate(percent = count / sum(count) * 100)
+
+marvel_male_secret <- marvel_data |>
+filter(sex == "Male Characters") |>
+group_by(id) |>
+summarise(count = n()) |>
+mutate(percent = count / sum(count) * 100)
+
+marvel_female_secret <- marvel_data |>
+filter(sex == "Female Characters") |>
+group_by(id) |>
+summarise(count = n()) |>
+mutate(percent = count / sum(count) * 100)
 
 # Display results of code below this codeblock
+dc_male_secret
+dc_female_secret
+marvel_male_secret
+marvel_female_secret
 
 ```
 
