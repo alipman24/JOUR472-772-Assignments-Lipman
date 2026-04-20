@@ -93,12 +93,46 @@ Then, calculate a per capita rate of electric & hybrid vehicles using the March 
 
 Finally, make a second county map showing the per capita rate. What counties stand out on this map? How is it different from the first one you made?
 
-**A3.**
+**A3.** Caroline County sticks out as the biggest change between the two maps. It had the highest percent change between July 2020 and March 2023, which suggested that the growth of EVs there would lead to a larger effect on the population. The second map disproved this by showing a per capita rate similar or below most of the other counties and not matching the trend. Garrett County now stands out as the only county to both have no growth of EVs and a lower per capita rate than every other county.
 
 ```{r}
 evs <- read_csv("data/ev_2020_2023.csv")
 ```
 
 ```{r}
-evs |> mutate(pct_change = (march_2023 -july_2020) / july_2020)
+w_pct_change <- evs |> mutate(pct_change = (march_2023 -july_2020) / july_2020)
+```
+
+```{r}
+evs_joined <- md_counties |> left_join(w_pct_change, join_by(NAME==county))
+```
+
+```{r}
+ggplot() +
+  geom_sf(data=evs_joined, aes(fill=pct_change)) +
+  scale_fill_viridis_b(option="magma", trans = "log") +
+  theme_minimal()
+```
+
+```{r}
+md_county_population <- get_acs(geography = "county",
+              variables = c(population = "B01001_001"),
+              year = 2021,
+              state = "MD",
+              geometry = TRUE)
+```
+
+```{r}
+evs_w_pop_joined <- st_join(evs_joined, wo_geom) |> mutate(per_capita = march_2023/estimate)
+```
+
+```{r}
+evs_w_pop_joined
+```
+
+```{r}
+ggplot() +
+  geom_sf(data=evs_w_pop_joined, aes(fill=per_capita)) +
+  scale_fill_viridis_b(option="magma", trans = "log") +
+  theme_minimal()
 ```
