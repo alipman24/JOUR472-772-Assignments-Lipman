@@ -52,3 +52,25 @@ We plan to research the needed data categories and try to add that for our futur
 ```{r}
 nrow(board_games_data)
 ```
+
+```{r}
+only_monopoly <- board_games_data |> filter(str_detect(name, "Monopoly"))
+only_monopoly
+```
+
+```{r}
+nrow(only_monopoly)
+```
+
+```{r}
+separate_wider_delim(only_monopoly, delim=",", cols = c(mechanic_1))
+```
+
+```{r}
+isolated_mechanics <- str_split(only_monopoly$mechanics, ",")
+isolated_mechanics
+```
+
+```{r}
+isolated_mechanics
+```
