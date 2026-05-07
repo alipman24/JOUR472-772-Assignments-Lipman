@@ -27,6 +27,8 @@ library(tidyverse)
 library(tidytext)
 library(janitor)
 library(lubridate)
+library(ggplot2)
+library(haven)
 ```
 
 ## Loading Data
@@ -53,6 +55,8 @@ We plan to research the needed data categories and try to add that for our futur
 nrow(board_games_data)
 ```
 
+Question: How many versions of Monopoly are there and what affects the different pricing for each?
+
 ```{r}
 only_monopoly <- board_games_data |> filter(str_detect(name, "Monopoly"))
 only_monopoly
@@ -63,14 +67,84 @@ nrow(only_monopoly)
 ```
 
 ```{r}
-separate_wider_delim(only_monopoly, delim=",", cols = c(mechanic_1))
+isolated_mechanics <- only_monopoly |> separate_longer_delim(cols = "mechanics", delim=",")
 ```
 
 ```{r}
-isolated_mechanics <- str_split(only_monopoly$mechanics, ",")
-isolated_mechanics
+counted_mechanics <- isolated_mechanics |> group_by(mechanics) |> summarise(count=n()) |> filter(count==1)
 ```
 
 ```{r}
-isolated_mechanics
+left_join(isolated_mechanics, counted_mechanics) |> filter(count==1)
+```
+
+```{r}
+amazon_prices <- read_csv("data/boardgame-geek-dataset_organized.csv")
+amazon_prices
+```
+
+Question: Does board game popularity correlate with the number of exclusive game mechanics within it?
+
+Findings: There is a slight correlation, but it's negative (-0.37). This means that a board game with a top bgg_rank (1) will most likely have more mechanics listed than a board game listed in the ranking list at 20,000, and the decrease in mechanic count will decrease as the rank decreases. So, yes, board game ranking, or popularity, does correlate with game mechanics listed.
+
+The correlation test also confirms that this information is statistically significant due to a high t-value and a p-value that's nearly equivalent to 0.
+
+Does a higher amount of mechanics also mean that the complexity rate will be higher? Are the more popular board games ones that are more complex or harder to complete?
+
+```{r}
+
+board_games_data_2 <- board_games_data |>
+  mutate(mechanic_count = ifelse(
+    is.na(mechanics) | mechanics == "",
+    0,
+    str_count(mechanics, ",") + 1
+  ))
+
+board_games_data_2 |>
+  select(name, mechanics, mechanic_count, bgg_rank)
+
+cor.test(board_games_data_2$bgg_rank, board_games_data_2$mechanic_count)
+```
+
+QUESTION: Which socioeconomic classes/education levels are more likely to have board games in their home? data set I found with details on this: <https://osf.io/nfr7d/files/tu8yq>
+
+ANSWER: Individuals with higher educational attainment (university and postgraduate levels) are more likely to report engagement with board games and related hobby gaming behaviors. Lower educational groups (high school or some high school) show comparatively lower engagement levels.
+
+```{r}
+
+your_move_data <- read_sav("data/Your move data.sav") |> clean_names()
+names(your_move_data)
+your_move_data$education <- as_factor(your_move_data$education)
+your_move_data$q3_1 <- as_factor(your_move_data$q3_1)
+your_move_data$q4_8_6 <- as.numeric(your_move_data$q4_8_6)
+```
+
+```{r}
+# 1. Education distribution
+
+table(your_move_data$education)
+
+ggplot(your_move_data, aes(x = education)) +
+  geom_bar() + coord_flip() +
+  labs(
+    title = "Education Levels of Board Gamers",
+    x = "Education Level",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+```{r}
+# 2. Education vs Player Type
+
+ggplot(your_move_data,
+       aes(x = education, fill = q3_1)) +
+  geom_bar(position = "fill") + coord_flip() +
+  labs(
+    title = "Player Type by Education Level",
+    x = "Education Level",
+    y = "Proportion",
+    fill = "Player Type"
+  ) +
+  theme_minimal()
 ```
